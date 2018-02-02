@@ -177,6 +177,9 @@ public class HttpClientOptions extends ClientOptionsBase {
   private boolean forceSni;
   private int decoderInitialBufferSize;
 
+  private String domainSocketAddress;
+
+
   /**
    * Default constructor
    */
@@ -217,6 +220,7 @@ public class HttpClientOptions extends ClientOptionsBase {
     this.maxRedirects = other.maxRedirects;
     this.forceSni = other.forceSni;
     this.decoderInitialBufferSize = other.getDecoderInitialBufferSize();
+    this.domainSocketAddress = other.getDomainSocketAddress();
   }
 
   /**
@@ -282,13 +286,13 @@ public class HttpClientOptions extends ClientOptionsBase {
   }
 
   @Override
-  public HttpClientOptions setReuseAddress(boolean reuseAddress) {
+  public HttpClientOptions setReuseAddress(Boolean reuseAddress) {
     super.setReuseAddress(reuseAddress);
     return this;
   }
 
   @Override
-  public HttpClientOptions setReusePort(boolean reusePort) {
+  public HttpClientOptions setReusePort(Boolean reusePort) {
     super.setReusePort(reusePort);
     return this;
   }
@@ -300,13 +304,13 @@ public class HttpClientOptions extends ClientOptionsBase {
   }
 
   @Override
-  public HttpClientOptions setTcpNoDelay(boolean tcpNoDelay) {
+  public HttpClientOptions setTcpNoDelay(Boolean tcpNoDelay) {
     super.setTcpNoDelay(tcpNoDelay);
     return this;
   }
 
   @Override
-  public HttpClientOptions setTcpKeepAlive(boolean tcpKeepAlive) {
+  public HttpClientOptions setTcpKeepAlive(Boolean tcpKeepAlive) {
     super.setTcpKeepAlive(tcpKeepAlive);
     return this;
   }
@@ -389,11 +393,6 @@ public class HttpClientOptions extends ClientOptionsBase {
   public HttpClientOptions addEnabledSecureTransportProtocol(final String protocol) {
     super.addEnabledSecureTransportProtocol(protocol);
     return this;
-  }
-
-  @Override
-  public HttpClientOptions removeEnabledSecureTransportProtocol(String protocol) {
-    return (HttpClientOptions) super.removeEnabledSecureTransportProtocol(protocol);
   }
 
   @Override
@@ -731,6 +730,26 @@ public class HttpClientOptions extends ClientOptionsBase {
   }
 
   /**
+   * Get the unix domain socket address to be used by this client.
+   *
+   * @return the unix domain socket address
+   */
+  public String getDomainSocketAddress() {
+    return domainSocketAddress;
+  }
+
+  /**
+   * Set the unix domain socket address to be used by this client.
+   *
+   * @param domainSocketAddress the unix domain socket address
+   * @return a reference to this, so the API can be used fluently
+   */
+  public HttpClientOptions setDomainSocketAddress(String domainSocketAddress) {
+    this.domainSocketAddress = domainSocketAddress;
+    return this;
+  }
+
+  /**
    * Get the protocol version.
    *
    * @return the protocol version
@@ -1008,6 +1027,7 @@ public class HttpClientOptions extends ClientOptionsBase {
     if (sendUnmaskedFrames != that.sendUnmaskedFrames) return false;
     if (maxRedirects != that.maxRedirects) return false;
     if (decoderInitialBufferSize != that.decoderInitialBufferSize) return false;
+    if (domainSocketAddress != null ? !domainSocketAddress.equals(that.domainSocketAddress) : that.domainSocketAddress != null) return false;
 
     return true;
   }
@@ -1036,6 +1056,8 @@ public class HttpClientOptions extends ClientOptionsBase {
     result = 31 * result + (sendUnmaskedFrames ? 1 : 0);
     result = 31 * result + maxRedirects;
     result = 31 * result + decoderInitialBufferSize;
+    result = 31 * result + (domainSocketAddress != null ? domainSocketAddress.hashCode() : 0);
+
     return result;
   }
 

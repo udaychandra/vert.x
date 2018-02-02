@@ -186,8 +186,15 @@ public class Transport {
       channel.config().setReceiveBufferSize(options.getReceiveBufferSize());
       channel.config().setRecvByteBufAllocator(new FixedRecvByteBufAllocator(options.getReceiveBufferSize()));
     }
-    setOption("SO_REUSEPORT", options.isReusePort(), channel.config()::setOption);
-    channel.config().setOption(ChannelOption.SO_REUSEADDR, options.isReuseAddress());
+
+    if (options.isReusePort()) {
+      setOption("SO_REUSEPORT", options.isReusePort(), channel.config()::setOption);
+    }
+
+    if (options.isReuseAddress() != null) {
+      channel.config().setOption(ChannelOption.SO_REUSEADDR, options.isReuseAddress());
+    }
+
     if (options.getTrafficClass() != -1) {
       channel.config().setTrafficClass(options.getTrafficClass());
     }
@@ -212,11 +219,19 @@ public class Transport {
     setOption("TCK_CORK", options.isTcpCork(), setter);
     setOption("TCK_QUICKACK", options.isTcpQuickAck(), setter);
     setOption("TCK_FASTOPEN", options.isTcpFastOpen(), setter);
-    setOption("SO_REUSEPORT", options.isReusePort(), setter);
+
+    if (options.isReusePort()) {
+      setOption("SO_REUSEPORT", options.isReusePort(), setter);
+    }
+
     if (options.getLocalAddress() != null) {
       bootstrap.localAddress(options.getLocalAddress(), 0);
     }
-    bootstrap.option(ChannelOption.TCP_NODELAY, options.isTcpNoDelay());
+
+    if (options.isTcpNoDelay() != null) {
+      bootstrap.option(ChannelOption.TCP_NODELAY, options.isTcpNoDelay());
+    }
+
     if (options.getSendBufferSize() != -1) {
       bootstrap.option(ChannelOption.SO_SNDBUF, options.getSendBufferSize());
     }
@@ -232,8 +247,14 @@ public class Transport {
     }
     bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, options.getConnectTimeout());
     bootstrap.option(ChannelOption.ALLOCATOR, PartialPooledByteBufAllocator.INSTANCE);
-    bootstrap.option(ChannelOption.SO_KEEPALIVE, options.isTcpKeepAlive());
-    bootstrap.option(ChannelOption.SO_REUSEADDR, options.isReuseAddress());
+
+    if (options.isTcpKeepAlive() != null) {
+      bootstrap.option(ChannelOption.SO_KEEPALIVE, options.isTcpKeepAlive());
+    }
+
+    if (options.isReuseAddress() != null) {
+      bootstrap.option(ChannelOption.SO_REUSEADDR, options.isReuseAddress());
+    }
   }
 
   public void configure(NetServerOptions options, ServerBootstrap bootstrap) {
@@ -241,7 +262,11 @@ public class Transport {
     setOption("TCK_CORK", options.isTcpCork(), setter);
     setOption("TCK_QUICKACK", options.isTcpQuickAck(), setter);
     setOption("TCK_FASTOPEN", options.isTcpFastOpen(), setter);
-    setOption("SO_REUSEPORT", options.isReusePort(), setter);
+
+    if (options.isReusePort()) {
+      setOption("SO_REUSEPORT", options.isReusePort(), setter);
+    }
+
     bootstrap.childOption(ChannelOption.TCP_NODELAY, options.isTcpNoDelay());
     if (options.getSendBufferSize() != -1) {
       bootstrap.childOption(ChannelOption.SO_SNDBUF, options.getSendBufferSize());
@@ -258,7 +283,11 @@ public class Transport {
     }
     bootstrap.childOption(ChannelOption.ALLOCATOR, PartialPooledByteBufAllocator.INSTANCE);
     bootstrap.childOption(ChannelOption.SO_KEEPALIVE, options.isTcpKeepAlive());
-    bootstrap.option(ChannelOption.SO_REUSEADDR, options.isReuseAddress());
+
+    if (options.isReuseAddress() != null) {
+      bootstrap.option(ChannelOption.SO_REUSEADDR, options.isReuseAddress());
+    }
+
     if (options.getAcceptBacklog() != -1) {
       bootstrap.option(ChannelOption.SO_BACKLOG, options.getAcceptBacklog());
     }

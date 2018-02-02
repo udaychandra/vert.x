@@ -156,8 +156,12 @@ import io.vertx.core.json.JsonArray;
     json.put("ssl", obj.isSsl());
     json.put("tcpCork", obj.isTcpCork());
     json.put("tcpFastOpen", obj.isTcpFastOpen());
-    json.put("tcpKeepAlive", obj.isTcpKeepAlive());
-    json.put("tcpNoDelay", obj.isTcpNoDelay());
+    if (obj.isTcpKeepAlive() != null) {
+      json.put("tcpKeepAlive", obj.isTcpKeepAlive());
+    }
+    if (obj.isTcpNoDelay() != null) {
+      json.put("tcpNoDelay", obj.isTcpNoDelay());
+    }
     json.put("tcpQuickAck", obj.isTcpQuickAck());
     if (obj.getTrustStoreOptions() != null) {
       json.put("trustStoreOptions", obj.getTrustStoreOptions().toJson());

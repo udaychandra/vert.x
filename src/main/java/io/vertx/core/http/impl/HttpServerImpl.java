@@ -74,7 +74,6 @@ import io.vertx.core.net.impl.HandlerHolder;
 import io.vertx.core.net.impl.HandlerManager;
 import io.vertx.core.net.impl.SSLHelper;
 import io.vertx.core.net.impl.ServerID;
-import io.vertx.core.net.impl.SocketAddressImpl;
 import io.vertx.core.net.impl.VertxEventLoopGroup;
 import io.vertx.core.net.impl.VertxSniHandler;
 import io.vertx.core.spi.metrics.HttpServerMetrics;
@@ -203,12 +202,12 @@ public class HttpServerImpl implements HttpServer, Closeable, MetricsProvider {
 
   @Override
   public HttpServer listen() {
-    return listen(options.getPort(), options.getHost(), null);
+    return listen(options.getPort(), options.getHost(), options.getDomainSocketAddress(), null);
   }
 
   @Override
   public HttpServer listen(Handler<AsyncResult<HttpServer>> listenHandler) {
-    return listen(options.getPort(), options.getHost(), listenHandler);
+    return listen(options.getPort(), options.getHost(), options.getDomainSocketAddress(), listenHandler);
   }
 
   @Override
@@ -226,7 +225,23 @@ public class HttpServerImpl implements HttpServer, Closeable, MetricsProvider {
     return listen(port, "0.0.0.0", listenHandler);
   }
 
-  public synchronized HttpServer listen(int port, String host, Handler<AsyncResult<HttpServer>> listenHandler) {
+  @Override
+  public HttpServer listen(String domainSocketPath) {
+    return listen(-1, null, domainSocketPath, null);
+  }
+
+  @Override
+  public HttpServer listen(String domainSocketPath, Handler<AsyncResult<HttpServer>> listenHandler) {
+    return listen(-1, null, domainSocketPath, listenHandler);
+  }
+
+  public HttpServer listen(int port, String host, Handler<AsyncResult<HttpServer>> listenHandler) {
+    return listen(port, host, null, listenHandler);
+  }
+
+  private synchronized HttpServer listen(int port, String host, String domainSocketAddress,
+                                         Handler<AsyncResult<HttpServer>> listenHandler) {
+
     if (requestStream.handler() == null && wsStream.handler() == null) {
       throw new IllegalStateException("Set request or websocket handler first");
     }
@@ -235,7 +250,7 @@ public class HttpServerImpl implements HttpServer, Closeable, MetricsProvider {
     }
     listenContext = vertx.getOrCreateContext();
     listening = true;
-    serverOrigin = (options.isSsl() ? "https" : "http") + "://" + host + ":" + port;
+    serverOrigin = getServerOrigin(port, host, domainSocketAddress);
     List<HttpVersion> applicationProtocols = options.getAlpnVersions();
     if (listenContext.isWorkerContext()) {
       applicationProtocols =  applicationProtocols.stream().filter(v -> v != HttpVersion.HTTP_2).collect(Collectors.toList());
@@ -243,9 +258,9 @@ public class HttpServerImpl implements HttpServer, Closeable, MetricsProvider {
     sslHelper.setApplicationProtocols(applicationProtocols);
     synchronized (vertx.sharedHttpServers()) {
       this.actualPort = port; // Will be updated on bind for a wildcard port
-      id = new ServerID(port, host);
+      id = new ServerID(port, domainSocketAddress != null ? domainSocketAddress : host);
       HttpServerImpl shared = vertx.sharedHttpServers().get(id);
-      if (shared == null || port == 0) {
+      if (shared == null || (domainSocketAddress == null && port == 0)) {
         serverChannelGroup = new DefaultChannelGroup("vertx-acceptor-channels", GlobalEventExecutor.INSTANCE);
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(vertx.getAcceptorEventLoopGroup(), availableWorkers);
@@ -253,99 +268,104 @@ public class HttpServerImpl implements HttpServer, Closeable, MetricsProvider {
         sslHelper.validate(vertx);
         bootstrap.childHandler(new ChannelInitializer<Channel>() {
           @Override
-            protected void initChannel(Channel ch) throws Exception {
-              if (requestStream.isPaused() || wsStream.isPaused()) {
-                ch.close();
-                return;
+          protected void initChannel(Channel ch) throws Exception {
+            if (requestStream.isPaused() || wsStream.isPaused()) {
+              ch.close();
+              return;
+            }
+            ChannelPipeline pipeline = ch.pipeline();
+            if (sslHelper.isSSL()) {
+              io.netty.util.concurrent.Future<Channel> handshakeFuture;
+              if (options.isSni()) {
+                VertxSniHandler sniHandler = new VertxSniHandler(sslHelper, vertx);
+                pipeline.addLast(sniHandler);
+                handshakeFuture = sniHandler.handshakeFuture();
+              } else {
+                SslHandler handler = new SslHandler(sslHelper.createEngine(vertx));
+                pipeline.addLast("ssl", handler);
+                handshakeFuture = handler.handshakeFuture();
               }
-              ChannelPipeline pipeline = ch.pipeline();
-              if (sslHelper.isSSL()) {
-                io.netty.util.concurrent.Future<Channel> handshakeFuture;
-                if (options.isSni()) {
-                  VertxSniHandler sniHandler = new VertxSniHandler(sslHelper, vertx);
-                  pipeline.addLast(sniHandler);
-                  handshakeFuture = sniHandler.handshakeFuture();
-                } else {
-                  SslHandler handler = new SslHandler(sslHelper.createEngine(vertx));
-                  pipeline.addLast("ssl", handler);
-                  handshakeFuture = handler.handshakeFuture();
-                }
-                handshakeFuture.addListener(future -> {
-                  if (future.isSuccess()) {
-                    if (options.isUseAlpn()) {
-                      SslHandler sslHandler = pipeline.get(SslHandler.class);
-                      String protocol = sslHandler.applicationProtocol();
-                      if ("h2".equals(protocol)) {
-                        handleHttp2(pipeline.channel());
-                      } else {
-                        configureHttp1(pipeline);
-                      }
+              handshakeFuture.addListener(future -> {
+                if (future.isSuccess()) {
+                  if (options.isUseAlpn()) {
+                    SslHandler sslHandler = pipeline.get(SslHandler.class);
+                    String protocol = sslHandler.applicationProtocol();
+                    if ("h2".equals(protocol)) {
+                      handleHttp2(pipeline.channel());
                     } else {
                       configureHttp1(pipeline);
                     }
                   } else {
-                    HandlerHolder<HttpHandlers> handler = httpHandlerMgr.chooseHandler(ch.eventLoop());
-                    handler.context.executeFromIO(() -> handler.handler.exceptionHandler.handle(future.cause()));
+                    configureHttp1(pipeline);
+                  }
+                } else {
+                  HandlerHolder<HttpHandlers> handler = httpHandlerMgr.chooseHandler(ch.eventLoop());
+                  handler.context.executeFromIO(() -> handler.handler.exceptionHandler.handle(future.cause()));
+                }
+              });
+            } else {
+              if (DISABLE_HC2) {
+                configureHttp1(pipeline);
+              } else {
+                IdleStateHandler idle;
+                if (options.getIdleTimeout() > 0) {
+                  pipeline.addLast("idle", idle = new IdleStateHandler(0, 0, options.getIdleTimeout()));
+                } else {
+                  idle = null;
+                }
+                // Handler that detects whether the HTTP/2 connection preface or just process the request
+                // with the HTTP 1.x pipeline to support H2C with prior knowledge, i.e a client that connects
+                // and uses HTTP/2 in clear text directly without an HTTP upgrade.
+                pipeline.addLast(new Http1xOrH2CHandler() {
+                  @Override
+                  protected void configure(ChannelHandlerContext ctx, boolean h2c) {
+                    if (idle != null) {
+                      // It will be re-added but this way we don't need to pay attention to order
+                      pipeline.remove(idle);
+                    }
+                    if (h2c) {
+                      handleHttp2(ctx.channel());
+                    } else {
+                      configureHttp1(ctx.pipeline());
+                    }
+                  }
+
+                  @Override
+                  public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+                    if (evt instanceof IdleStateEvent && ((IdleStateEvent) evt).state() == IdleState.ALL_IDLE) {
+                      ctx.close();
+                    }
+                  }
+
+                  @Override
+                  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+                    super.exceptionCaught(ctx, cause);
+                    HandlerHolder<HttpHandlers> handler = httpHandlerMgr.chooseHandler(ctx.channel().eventLoop());
+                    handler.context.executeFromIO(() -> handler.handler.exceptionHandler.handle(cause));
                   }
                 });
-              } else {
-                if (DISABLE_HC2) {
-                  configureHttp1(pipeline);
-                } else {
-                  IdleStateHandler idle;
-                  if (options.getIdleTimeout() > 0) {
-                    pipeline.addLast("idle", idle = new IdleStateHandler(0, 0, options.getIdleTimeout()));
-                  } else {
-                    idle = null;
-                  }
-                  // Handler that detects whether the HTTP/2 connection preface or just process the request
-                  // with the HTTP 1.x pipeline to support H2C with prior knowledge, i.e a client that connects
-                  // and uses HTTP/2 in clear text directly without an HTTP upgrade.
-                  pipeline.addLast(new Http1xOrH2CHandler() {
-                    @Override
-                    protected void configure(ChannelHandlerContext ctx, boolean h2c) {
-                      if (idle != null) {
-                        // It will be re-added but this way we don't need to pay attention to order
-                        pipeline.remove(idle);
-                      }
-                      if (h2c) {
-                        handleHttp2(ctx.channel());
-                      } else {
-                        configureHttp1(ctx.pipeline());
-                      }
-                    }
-
-                    @Override
-                    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-                      if (evt instanceof IdleStateEvent && ((IdleStateEvent) evt).state() == IdleState.ALL_IDLE) {
-                        ctx.close();
-                      }
-                    }
-
-                    @Override
-                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-                      super.exceptionCaught(ctx, cause);
-                      HandlerHolder<HttpHandlers> handler = httpHandlerMgr.chooseHandler(ctx.channel().eventLoop());
-                      handler.context.executeFromIO(() -> handler.handler.exceptionHandler.handle(cause));
-                    }
-                  });
-                }
               }
             }
+          }
         });
 
         addHandlers(this, listenContext);
+        SocketAddress bindAddress = getBindAddress(port, host, domainSocketAddress);
         try {
-          bindFuture = AsyncResolveConnectHelper.doBind(vertx, SocketAddress.inetSocketAddress(port, host), bootstrap);
+          bindFuture = AsyncResolveConnectHelper.doBind(vertx, bindAddress, bootstrap);
           bindFuture.addListener(res -> {
             if (res.failed()) {
               vertx.sharedHttpServers().remove(id);
             } else {
               Channel serverChannel = res.result();
-              HttpServerImpl.this.actualPort = ((InetSocketAddress)serverChannel.localAddress()).getPort();
+              if (domainSocketAddress != null) {
+                HttpServerImpl.this.actualPort = -1;
+              } else {
+                HttpServerImpl.this.actualPort = ((InetSocketAddress) serverChannel.localAddress()).getPort();
+              }
               serverChannelGroup.add(serverChannel);
               VertxMetrics metrics = vertx.metricsSPI();
-              this.metrics = metrics != null ? metrics.createMetrics(this, new SocketAddressImpl(port, host), options) : null;
+              this.metrics = metrics != null ? metrics.createMetrics(this, bindAddress, options) : null;
             }
           });
         } catch (final Throwable t) {
@@ -367,7 +387,7 @@ public class HttpServerImpl implements HttpServer, Closeable, MetricsProvider {
         this.actualPort = shared.actualPort;
         addHandlers(actualServer, listenContext);
         VertxMetrics metrics = vertx.metricsSPI();
-        this.metrics = metrics != null ? metrics.createMetrics(this, new SocketAddressImpl(port, host), options) : null;
+        this.metrics = metrics != null ? metrics.createMetrics(this, getBindAddress(port, host, domainSocketAddress), options) : null;
       }
       actualServer.bindFuture.addListener(future -> {
         if (listenHandler != null) {
@@ -562,6 +582,17 @@ public class HttpServerImpl implements HttpServer, Closeable, MetricsProvider {
     vertx.transport().configure(options, bootstrap);
   }
 
+  private String getServerOrigin(int port, String host, String domainSocketAddress) {
+    if (domainSocketAddress != null) return domainSocketAddress;
+
+    return (options.isSsl() ? "https" : "http") + "://" + host + ":" + port;
+  }
+
+  private SocketAddress getBindAddress(int port, String host, String domainSocketAddress) {
+    if (domainSocketAddress != null) return SocketAddress.domainSocketAddress(domainSocketAddress);
+
+    return SocketAddress.inetSocketAddress(port, host);
+  }
 
   private void addHandlers(HttpServerImpl server, ContextImpl context) {
     server.httpHandlerMgr.addHandler(
@@ -682,7 +713,6 @@ public class HttpServerImpl implements HttpServer, Closeable, MetricsProvider {
               ch.writeAndFlush(wsFrame).addListener(ChannelFutureListener.CLOSE);
               closeFrameSent = true;
             }
-            conn.handleMessage(msg);
             break;
           default:
             throw new IllegalStateException("Invalid type: " + wsFrame.type());

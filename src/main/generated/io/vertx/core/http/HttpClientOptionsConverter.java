@@ -44,6 +44,9 @@ import io.vertx.core.json.JsonArray;
     if (json.getValue("defaultPort") instanceof Number) {
       obj.setDefaultPort(((Number)json.getValue("defaultPort")).intValue());
     }
+    if (json.getValue("domainSocketAddress") instanceof String) {
+      obj.setDomainSocketAddress((String)json.getValue("domainSocketAddress"));
+    }
     if (json.getValue("forceSni") instanceof Boolean) {
       obj.setForceSni((Boolean)json.getValue("forceSni"));
     }
@@ -120,6 +123,9 @@ import io.vertx.core.json.JsonArray;
       json.put("defaultHost", obj.getDefaultHost());
     }
     json.put("defaultPort", obj.getDefaultPort());
+    if (obj.getDomainSocketAddress() != null) {
+      json.put("domainSocketAddress", obj.getDomainSocketAddress());
+    }
     json.put("forceSni", obj.isForceSni());
     json.put("http2ClearTextUpgrade", obj.isHttp2ClearTextUpgrade());
     json.put("http2ConnectionWindowSize", obj.getHttp2ConnectionWindowSize());

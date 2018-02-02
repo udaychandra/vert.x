@@ -94,7 +94,7 @@ class HttpChannelConnector implements ConnectionProvider<HttpClientConnection> {
 
     Bootstrap bootstrap = new Bootstrap();
     bootstrap.group(context.nettyEventLoop());
-    bootstrap.channel(client.getVertx().transport().channelType(false));
+    bootstrap.channel(client.getVertx().transport().channelType(options.getDomainSocketAddress() != null));
 
     applyConnectionOptions(bootstrap);
 
@@ -211,7 +211,10 @@ class HttpChannelConnector implements ConnectionProvider<HttpClientConnection> {
       }
     };
 
-    channelProvider.connect(client.getVertx(), bootstrap, client.getOptions().getProxyOptions(), SocketAddress.inetSocketAddress(port, host), channelInitializer, channelHandler);
+    SocketAddress socketAddress = options.getDomainSocketAddress() != null ?
+      SocketAddress.domainSocketAddress(options.getDomainSocketAddress()) : SocketAddress.inetSocketAddress(port, host);
+
+    channelProvider.connect(client.getVertx(), bootstrap, client.getOptions().getProxyOptions(), socketAddress, channelInitializer, channelHandler);
 
     return weight;
   }

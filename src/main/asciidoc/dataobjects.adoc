@@ -159,7 +159,7 @@ Add an enabled cipher suite, appended to the ordered suites.
 +++
 |[[enabledSecureTransportProtocols]]`enabledSecureTransportProtocols`|`Array of String`|
 +++
-Add an enabled SSL/TLS protocols, appended to the ordered protocols.
+Sets the list of enabled SSL/TLS protocols.
 +++
 |[[idleTimeout]]`idleTimeout`|`Number (int)`|
 +++
@@ -548,7 +548,7 @@ Add an enabled cipher suite, appended to the ordered suites.
 +++
 |[[enabledSecureTransportProtocols]]`enabledSecureTransportProtocols`|`Array of String`|
 +++
-Add an enabled SSL/TLS protocols, appended to the ordered protocols.
+Sets the list of enabled SSL/TLS protocols.
 +++
 |[[host]]`host`|`String`|
 +++
@@ -778,13 +778,17 @@ Set the default host name to be used by this client in requests if none is provi
 +++
 Set the default port to be used by this client in requests if none is provided when making the request.
 +++
+|[[domainSocketAddress]]`domainSocketAddress`|`String`|
++++
+Set the unix domain socket address to be used by this client.
++++
 |[[enabledCipherSuites]]`enabledCipherSuites`|`Array of String`|
 +++
 Add an enabled cipher suite, appended to the ordered suites.
 +++
 |[[enabledSecureTransportProtocols]]`enabledSecureTransportProtocols`|`Array of String`|
 +++
-Add an enabled SSL/TLS protocols, appended to the ordered protocols.
+Sets the list of enabled SSL/TLS protocols.
 +++
 |[[forceSni]]`forceSni`|`Boolean`|
 +++
@@ -1076,13 +1080,18 @@ Set the initial buffer size for the HTTP decoder
 +++
 Set whether the server supports decompression
 +++
+|[[domainSocketAddress]]`domainSocketAddress`|`String`|
++++
+Set the unix domain socket address at which the server receives client connections.
+ By default, if this is set, it takes precedence over host/port combo.
++++
 |[[enabledCipherSuites]]`enabledCipherSuites`|`Array of String`|
 +++
 Add an enabled cipher suite, appended to the ordered suites.
 +++
 |[[enabledSecureTransportProtocols]]`enabledSecureTransportProtocols`|`Array of String`|
 +++
-Add an enabled SSL/TLS protocols, appended to the ordered protocols.
+Sets the list of enabled SSL/TLS protocols.
 +++
 |[[handle100ContinueAutomatically]]`handle100ContinueAutomatically`|`Boolean`|
 +++
@@ -1338,7 +1347,7 @@ Add an enabled cipher suite, appended to the ordered suites.
 +++
 |[[enabledSecureTransportProtocols]]`enabledSecureTransportProtocols`|`Array of String`|
 +++
-Add an enabled SSL/TLS protocols, appended to the ordered protocols.
+Sets the list of enabled SSL/TLS protocols.
 +++
 |[[hostnameVerificationAlgorithm]]`hostnameVerificationAlgorithm`|`String`|
 +++
@@ -1498,13 +1507,18 @@ Add a CRL path
 +++
 Add a CRL value
 +++
+|[[domainSocketAddress]]`domainSocketAddress`|`String`|
++++
+Set the unix domain socket address at which the server receives client connections.
+ By default, if this is set, it takes precedence over host/port combo.
++++
 |[[enabledCipherSuites]]`enabledCipherSuites`|`Array of String`|
 +++
 Add an enabled cipher suite, appended to the ordered suites.
 +++
 |[[enabledSecureTransportProtocols]]`enabledSecureTransportProtocols`|`Array of String`|
 +++
-Add an enabled SSL/TLS protocols, appended to the ordered protocols.
+Sets the list of enabled SSL/TLS protocols.
 +++
 |[[host]]`host`|`String`|
 +++
@@ -2095,7 +2109,7 @@ Add an enabled cipher suite, appended to the ordered suites.
 +++
 |[[enabledSecureTransportProtocols]]`enabledSecureTransportProtocols`|`Array of String`|
 +++
-Add an enabled SSL/TLS protocols, appended to the ordered protocols.
+Sets the list of enabled SSL/TLS protocols.
 +++
 |[[idleTimeout]]`idleTimeout`|`Number (int)`|
 +++

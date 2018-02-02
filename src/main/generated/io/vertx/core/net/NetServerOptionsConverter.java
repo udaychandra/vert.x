@@ -36,6 +36,9 @@ import io.vertx.core.json.JsonArray;
     if (json.getValue("clientAuthRequired") instanceof Boolean) {
       obj.setClientAuthRequired((Boolean)json.getValue("clientAuthRequired"));
     }
+    if (json.getValue("domainSocketAddress") instanceof String) {
+      obj.setDomainSocketAddress((String)json.getValue("domainSocketAddress"));
+    }
     if (json.getValue("host") instanceof String) {
       obj.setHost((String)json.getValue("host"));
     }
@@ -53,6 +56,9 @@ import io.vertx.core.json.JsonArray;
       json.put("clientAuth", obj.getClientAuth().name());
     }
     json.put("clientAuthRequired", obj.isClientAuthRequired());
+    if (obj.getDomainSocketAddress() != null) {
+      json.put("domainSocketAddress", obj.getDomainSocketAddress());
+    }
     if (obj.getHost() != null) {
       json.put("host", obj.getHost());
     }

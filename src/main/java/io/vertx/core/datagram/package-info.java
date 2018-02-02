@@ -172,7 +172,7 @@
  * - {@link io.vertx.core.datagram.DatagramSocketOptions#setSendBufferSize(int)} Sets the send buffer size in bytes.
  * - {@link io.vertx.core.datagram.DatagramSocketOptions#setReceiveBufferSize(int)} Sets the TCP receive buffer size
  * in bytes.
- * - {@link io.vertx.core.datagram.DatagramSocketOptions#setReuseAddress(boolean)} If true then addresses in TIME_WAIT
+ * - {@link io.vertx.core.datagram.DatagramSocketOptions#setReuseAddress(Boolean)} If true then addresses in TIME_WAIT
  * state can be reused after they have been closed.
  * - {@link io.vertx.core.datagram.DatagramSocketOptions#setTrafficClass(int)}
  * - {@link io.vertx.core.datagram.DatagramSocketOptions#setBroadcast(boolean)} Sets or clears the SO_BROADCAST socket

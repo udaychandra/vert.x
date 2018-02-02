@@ -202,12 +202,12 @@ public abstract class ClientOptionsBase extends TCPSSLOptions {
   }
 
   @Override
-  public ClientOptionsBase setTcpNoDelay(boolean tcpNoDelay) {
+  public ClientOptionsBase setTcpNoDelay(Boolean tcpNoDelay) {
     return (ClientOptionsBase) super.setTcpNoDelay(tcpNoDelay);
   }
 
   @Override
-  public ClientOptionsBase setTcpKeepAlive(boolean tcpKeepAlive) {
+  public ClientOptionsBase setTcpKeepAlive(Boolean tcpKeepAlive) {
     return (ClientOptionsBase) super.setTcpKeepAlive(tcpKeepAlive);
   }
 
@@ -302,12 +302,12 @@ public abstract class ClientOptionsBase extends TCPSSLOptions {
   }
 
   @Override
-  public ClientOptionsBase setReuseAddress(boolean reuseAddress) {
+  public ClientOptionsBase setReuseAddress(Boolean reuseAddress) {
     return (ClientOptionsBase) super.setReuseAddress(reuseAddress);
   }
 
   @Override
-  public ClientOptionsBase setReusePort(boolean reusePort) {
+  public ClientOptionsBase setReusePort(Boolean reusePort) {
     return (ClientOptionsBase) super.setReusePort(reusePort);
   }
 
@@ -334,11 +334,6 @@ public abstract class ClientOptionsBase extends TCPSSLOptions {
   @Override
   public ClientOptionsBase addEnabledSecureTransportProtocol(String protocol) {
     return (ClientOptionsBase) super.addEnabledSecureTransportProtocol(protocol);
-  }
-
-  @Override
-  public ClientOptionsBase removeEnabledSecureTransportProtocol(String protocol) {
-    return (ClientOptionsBase) super.removeEnabledSecureTransportProtocol(protocol);
   }
 
   @Override

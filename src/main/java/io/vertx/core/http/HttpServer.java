@@ -166,6 +166,28 @@ public interface HttpServer extends Measured {
   HttpServer listen(Handler<AsyncResult<HttpServer>> listenHandler);
 
   /**
+   * Tell the server to start listening. The server will listen on domain socket address specified here.
+   * <p>NOTE: This method is only supported when {@link io.vertx.core.VertxOptions#preferNativeTransport } is enabled and available.</p>
+   * <p>
+   * The listen happens asynchronously and the server may not be listening until some time after the call has returned.
+   *
+   * @param domainSocketAddress  the domain socket address to listen on
+   * @return a reference to this, so the API can be used fluently
+   */
+  @Fluent
+  HttpServer listen(String domainSocketAddress);
+
+  /**
+   * Like {@link #listen(String)} but supplying a handler that will be called when the server is actually listening (or has failed).
+   *
+   * @param domainSocketAddress  the domain socket address to listen on
+   * @param listenHandler  the listen handler
+   * @return a reference to this, so the API can be used fluently
+   */
+  @Fluent
+  HttpServer listen(String domainSocketAddress, Handler<AsyncResult<HttpServer>> listenHandler);
+
+  /**
    * Close the server. Any open HTTP connections will be closed.
    * <p>
    * The close happens asynchronously and the server may not be closed until some time after the call has returned.

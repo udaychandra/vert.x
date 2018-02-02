@@ -55,9 +55,9 @@ public abstract class NetworkOptions {
   private int sendBufferSize;
   private int receiveBufferSize;
   private int trafficClass;
-  private boolean reuseAddress;
+  private Boolean reuseAddress;
   private boolean logActivity;
-  private boolean reusePort;
+  private Boolean reusePort;
 
   /**
    * Default constructor
@@ -151,7 +151,7 @@ public abstract class NetworkOptions {
   /**
    * @return  the value of reuse address
    */
-  public boolean isReuseAddress() {
+  public Boolean isReuseAddress() {
     return reuseAddress;
   }
 
@@ -160,7 +160,7 @@ public abstract class NetworkOptions {
    * @param reuseAddress  the value of reuse address
    * @return a reference to this, so the API can be used fluently
    */
-  public NetworkOptions setReuseAddress(boolean reuseAddress) {
+  public NetworkOptions setReuseAddress(Boolean reuseAddress) {
     this.reuseAddress = reuseAddress;
     return this;
   }
@@ -205,7 +205,7 @@ public abstract class NetworkOptions {
   /**
    * @return  the value of reuse address - only supported by native transports
    */
-  public boolean isReusePort() {
+  public Boolean isReusePort() {
     return reusePort;
   }
 
@@ -217,7 +217,7 @@ public abstract class NetworkOptions {
    * @param reusePort  the value of reuse port
    * @return a reference to this, so the API can be used fluently
    */
-  public NetworkOptions setReusePort(boolean reusePort) {
+  public NetworkOptions setReusePort(Boolean reusePort) {
     this.reusePort = reusePort;
     return this;
   }

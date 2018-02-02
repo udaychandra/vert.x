@@ -125,13 +125,13 @@ public class DatagramSocketOptions extends NetworkOptions {
   }
 
   @Override
-  public DatagramSocketOptions setReuseAddress(boolean reuseAddress) {
+  public DatagramSocketOptions setReuseAddress(Boolean reuseAddress) {
     super.setReuseAddress(reuseAddress);
     return this;
   }
 
   @Override
-  public DatagramSocketOptions setReusePort(boolean reusePort) {
+  public DatagramSocketOptions setReusePort(Boolean reusePort) {
     return (DatagramSocketOptions) super.setReusePort(reusePort);
   }
 

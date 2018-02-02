@@ -208,13 +208,13 @@ public class HttpServerOptions extends NetServerOptions {
   }
 
   @Override
-  public HttpServerOptions setReuseAddress(boolean reuseAddress) {
+  public HttpServerOptions setReuseAddress(Boolean reuseAddress) {
     super.setReuseAddress(reuseAddress);
     return this;
   }
 
   @Override
-  public HttpServerOptions setReusePort(boolean reusePort) {
+  public HttpServerOptions setReusePort(Boolean reusePort) {
     super.setReusePort(reusePort);
     return this;
   }
@@ -226,13 +226,13 @@ public class HttpServerOptions extends NetServerOptions {
   }
 
   @Override
-  public HttpServerOptions setTcpNoDelay(boolean tcpNoDelay) {
+  public HttpServerOptions setTcpNoDelay(Boolean tcpNoDelay) {
     super.setTcpNoDelay(tcpNoDelay);
     return this;
   }
 
   @Override
-  public HttpServerOptions setTcpKeepAlive(boolean tcpKeepAlive) {
+  public HttpServerOptions setTcpKeepAlive(Boolean tcpKeepAlive) {
     super.setTcpKeepAlive(tcpKeepAlive);
     return this;
   }
@@ -321,11 +321,6 @@ public class HttpServerOptions extends NetServerOptions {
   public HttpServerOptions addEnabledSecureTransportProtocol(final String protocol) {
     super.addEnabledSecureTransportProtocol(protocol);
     return this;
-  }
-
-  @Override
-  public HttpServerOptions removeEnabledSecureTransportProtocol(String protocol) {
-    return (HttpServerOptions) super.removeEnabledSecureTransportProtocol(protocol);
   }
 
   @Override

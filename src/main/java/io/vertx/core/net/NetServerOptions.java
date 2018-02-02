@@ -53,6 +53,7 @@ public class NetServerOptions extends TCPSSLOptions {
 
   private int port;
   private String host;
+  private String domainSocketAddress;
   private int acceptBacklog;
   private ClientAuth clientAuth;
   private boolean sni;
@@ -74,6 +75,7 @@ public class NetServerOptions extends TCPSSLOptions {
     super(other);
     this.port = other.getPort();
     this.host = other.getHost();
+    this.domainSocketAddress = other.getDomainSocketAddress();
     this.acceptBacklog = other.getAcceptBacklog();
     this.clientAuth = other.getClientAuth();
     this.sni = other.isSni();
@@ -114,13 +116,13 @@ public class NetServerOptions extends TCPSSLOptions {
   }
 
   @Override
-  public NetServerOptions setReuseAddress(boolean reuseAddress) {
+  public NetServerOptions setReuseAddress(Boolean reuseAddress) {
     super.setReuseAddress(reuseAddress);
     return this;
   }
 
   @Override
-  public NetServerOptions setReusePort(boolean reusePort) {
+  public NetServerOptions setReusePort(Boolean reusePort) {
     super.setReusePort(reusePort);
     return this;
   }
@@ -132,13 +134,13 @@ public class NetServerOptions extends TCPSSLOptions {
   }
 
   @Override
-  public NetServerOptions setTcpNoDelay(boolean tcpNoDelay) {
+  public NetServerOptions setTcpNoDelay(Boolean tcpNoDelay) {
     super.setTcpNoDelay(tcpNoDelay);
     return this;
   }
 
   @Override
-  public NetServerOptions setTcpKeepAlive(boolean tcpKeepAlive) {
+  public NetServerOptions setTcpKeepAlive(Boolean tcpKeepAlive) {
     super.setTcpKeepAlive(tcpKeepAlive);
     return this;
   }
@@ -334,6 +336,25 @@ public class NetServerOptions extends TCPSSLOptions {
   }
 
   /**
+   * @return the unix domain socket address
+   */
+  public String getDomainSocketAddress() {
+    return domainSocketAddress;
+  }
+
+  /**
+   * Set the unix domain socket address at which the server receives client connections.
+   * By default, if this is set, it takes precedence over host/port combo.
+   *
+   * @param domainSocketAddress the unix domain socket address
+   * @return a reference to this, so the API can be used fluently
+   */
+  public NetServerOptions setDomainSocketAddress(String domainSocketAddress) {
+    this.domainSocketAddress = domainSocketAddress;
+    return this;
+  }
+
+  /**
    *
    * @return true if client auth is required
    */
@@ -405,6 +426,7 @@ public class NetServerOptions extends TCPSSLOptions {
     if (clientAuth != that.clientAuth) return false;
     if (port != that.port) return false;
     if (host != null ? !host.equals(that.host) : that.host != null) return false;
+    if (domainSocketAddress != null ? !domainSocketAddress.equals(that.domainSocketAddress) : that.domainSocketAddress != null) return false;
     if (sni != that.sni) return false;
 
     return true;
@@ -415,6 +437,7 @@ public class NetServerOptions extends TCPSSLOptions {
     int result = super.hashCode();
     result = 31 * result + port;
     result = 31 * result + (host != null ? host.hashCode() : 0);
+    result = 31 * result + (domainSocketAddress != null ? domainSocketAddress.hashCode() : 0);
     result = 31 * result + acceptBacklog;
     result = 31 * result + clientAuth.hashCode();
     result = 31 * result + (sni ? 1 : 0);

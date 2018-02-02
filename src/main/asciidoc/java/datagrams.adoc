@@ -228,7 +228,7 @@ change it's behaviour with the `link:../../apidocs/io/vertx/core/datagram/Datagr
 - `link:../../apidocs/io/vertx/core/datagram/DatagramSocketOptions.html#setSendBufferSize-int-[setSendBufferSize]` Sets the send buffer size in bytes.
 - `link:../../apidocs/io/vertx/core/datagram/DatagramSocketOptions.html#setReceiveBufferSize-int-[setReceiveBufferSize]` Sets the TCP receive buffer size
 in bytes.
-- `link:../../apidocs/io/vertx/core/datagram/DatagramSocketOptions.html#setReuseAddress-boolean-[setReuseAddress]` If true then addresses in TIME_WAIT
+- `link:../../apidocs/io/vertx/core/datagram/DatagramSocketOptions.html#setReuseAddress-java.lang.Boolean-[setReuseAddress]` If true then addresses in TIME_WAIT
 state can be reused after they have been closed.
 - `link:../../apidocs/io/vertx/core/datagram/DatagramSocketOptions.html#setTrafficClass-int-[setTrafficClass]`
 - `link:../../apidocs/io/vertx/core/datagram/DatagramSocketOptions.html#setBroadcast-boolean-[setBroadcast]` Sets or clears the SO_BROADCAST socket

@@ -229,15 +229,23 @@ import io.vertx.core.json.JsonArray;
     json.put("receiveBufferSize", obj.getReceiveBufferSize());
     json.put("reconnectAttempts", obj.getReconnectAttempts());
     json.put("reconnectInterval", obj.getReconnectInterval());
-    json.put("reuseAddress", obj.isReuseAddress());
-    json.put("reusePort", obj.isReusePort());
+    if (obj.isReuseAddress() != null) {
+      json.put("reuseAddress", obj.isReuseAddress());
+    }
+    if (obj.isReusePort() != null) {
+      json.put("reusePort", obj.isReusePort());
+    }
     json.put("sendBufferSize", obj.getSendBufferSize());
     json.put("soLinger", obj.getSoLinger());
     json.put("ssl", obj.isSsl());
     json.put("tcpCork", obj.isTcpCork());
     json.put("tcpFastOpen", obj.isTcpFastOpen());
-    json.put("tcpKeepAlive", obj.isTcpKeepAlive());
-    json.put("tcpNoDelay", obj.isTcpNoDelay());
+    if (obj.isTcpKeepAlive() != null) {
+      json.put("tcpKeepAlive", obj.isTcpKeepAlive());
+    }
+    if (obj.isTcpNoDelay() != null) {
+      json.put("tcpNoDelay", obj.isTcpNoDelay());
+    }
     json.put("tcpQuickAck", obj.isTcpQuickAck());
     json.put("trafficClass", obj.getTrafficClass());
     json.put("trustAll", obj.isTrustAll());

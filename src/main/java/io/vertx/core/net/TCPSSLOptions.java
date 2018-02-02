@@ -90,8 +90,8 @@ public abstract class TCPSSLOptions extends NetworkOptions {
    */
   public static final boolean DEFAULT_TCP_QUICKACK = false;
 
-  private boolean tcpNoDelay;
-  private boolean tcpKeepAlive;
+  private Boolean tcpNoDelay;
+  private Boolean tcpKeepAlive;
   private int soLinger;
   private boolean usePooledBuffers;
   private int idleTimeout;
@@ -185,7 +185,7 @@ public abstract class TCPSSLOptions extends NetworkOptions {
   /**
    * @return TCP no delay enabled ?
    */
-  public boolean isTcpNoDelay() {
+  public Boolean isTcpNoDelay() {
     return tcpNoDelay;
   }
 
@@ -195,7 +195,7 @@ public abstract class TCPSSLOptions extends NetworkOptions {
    * @param tcpNoDelay true if TCP no delay is enabled (Nagle disabled)
    * @return a reference to this, so the API can be used fluently
    */
-  public TCPSSLOptions setTcpNoDelay(boolean tcpNoDelay) {
+  public TCPSSLOptions setTcpNoDelay(Boolean tcpNoDelay) {
     this.tcpNoDelay = tcpNoDelay;
     return this;
   }
@@ -203,7 +203,7 @@ public abstract class TCPSSLOptions extends NetworkOptions {
   /**
    * @return is TCP keep alive enabled?
    */
-  public boolean isTcpKeepAlive() {
+  public Boolean isTcpKeepAlive() {
     return tcpKeepAlive;
   }
 
@@ -213,7 +213,7 @@ public abstract class TCPSSLOptions extends NetworkOptions {
    * @param tcpKeepAlive true if TCP keep alive is enabled
    * @return a reference to this, so the API can be used fluently
    */
-  public TCPSSLOptions setTcpKeepAlive(boolean tcpKeepAlive) {
+  public TCPSSLOptions setTcpKeepAlive(Boolean tcpKeepAlive) {
     this.tcpKeepAlive = tcpKeepAlive;
     return this;
   }
@@ -671,7 +671,7 @@ public abstract class TCPSSLOptions extends NetworkOptions {
   }
 
   @Override
-  public TCPSSLOptions setReuseAddress(boolean reuseAddress) {
+  public TCPSSLOptions setReuseAddress(Boolean reuseAddress) {
     return (TCPSSLOptions) super.setReuseAddress(reuseAddress);
   }
 
@@ -681,7 +681,7 @@ public abstract class TCPSSLOptions extends NetworkOptions {
   }
 
   @Override
-  public TCPSSLOptions setReusePort(boolean reusePort) {
+  public TCPSSLOptions setReusePort(Boolean reusePort) {
     return (TCPSSLOptions) super.setReusePort(reusePort);
   }
 

@@ -50,8 +50,12 @@ import io.vertx.core.json.JsonArray;
    static void toJson(NetworkOptions obj, JsonObject json) {
     json.put("logActivity", obj.getLogActivity());
     json.put("receiveBufferSize", obj.getReceiveBufferSize());
-    json.put("reuseAddress", obj.isReuseAddress());
-    json.put("reusePort", obj.isReusePort());
+    if (obj.isReuseAddress() != null) {
+      json.put("reuseAddress", obj.isReuseAddress());
+    }
+    if (obj.isReusePort() != null) {
+      json.put("reusePort", obj.isReusePort());
+    }
     json.put("sendBufferSize", obj.getSendBufferSize());
     json.put("trafficClass", obj.getTrafficClass());
   }

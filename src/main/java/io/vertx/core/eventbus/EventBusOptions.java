@@ -359,13 +359,13 @@ public class EventBusOptions extends TCPSSLOptions {
   }
 
   @Override
-  public EventBusOptions setTcpKeepAlive(boolean tcpKeepAlive) {
+  public EventBusOptions setTcpKeepAlive(Boolean tcpKeepAlive) {
     super.setTcpKeepAlive(tcpKeepAlive);
     return this;
   }
 
   @Override
-  public EventBusOptions setTcpNoDelay(boolean tcpNoDelay) {
+  public EventBusOptions setTcpNoDelay(Boolean tcpNoDelay) {
     super.setTcpNoDelay(tcpNoDelay);
     return this;
   }
@@ -395,13 +395,13 @@ public class EventBusOptions extends TCPSSLOptions {
   }
 
   @Override
-  public EventBusOptions setReuseAddress(boolean reuseAddress) {
+  public EventBusOptions setReuseAddress(Boolean reuseAddress) {
     super.setReuseAddress(reuseAddress);
     return this;
   }
 
   @Override
-  public EventBusOptions setReusePort(boolean reusePort) {
+  public EventBusOptions setReusePort(Boolean reusePort) {
     super.setReusePort(reusePort);
     return this;
   }

@@ -95,13 +95,13 @@ public class NetClientOptions extends ClientOptionsBase {
   }
 
   @Override
-  public NetClientOptions setReuseAddress(boolean reuseAddress) {
+  public NetClientOptions setReuseAddress(Boolean reuseAddress) {
     super.setReuseAddress(reuseAddress);
     return this;
   }
 
   @Override
-  public NetClientOptions setReusePort(boolean reusePort) {
+  public NetClientOptions setReusePort(Boolean reusePort) {
     super.setReusePort(reusePort);
     return this;
   }
@@ -113,13 +113,13 @@ public class NetClientOptions extends ClientOptionsBase {
   }
 
   @Override
-  public NetClientOptions setTcpNoDelay(boolean tcpNoDelay) {
+  public NetClientOptions setTcpNoDelay(Boolean tcpNoDelay) {
     super.setTcpNoDelay(tcpNoDelay);
     return this;
   }
 
   @Override
-  public NetClientOptions setTcpKeepAlive(boolean tcpKeepAlive) {
+  public NetClientOptions setTcpKeepAlive(Boolean tcpKeepAlive) {
     super.setTcpKeepAlive(tcpKeepAlive);
     return this;
   }
@@ -202,11 +202,6 @@ public class NetClientOptions extends ClientOptionsBase {
   public NetClientOptions addEnabledSecureTransportProtocol(final String protocol) {
     super.addEnabledSecureTransportProtocol(protocol);
     return this;
-  }
-
-  @Override
-  public NetClientOptions removeEnabledSecureTransportProtocol(String protocol) {
-    return (NetClientOptions) super.removeEnabledSecureTransportProtocol(protocol);
   }
 
   @Override
